@@ -8,7 +8,7 @@ namespace ClassSplitter
     {
         private static void Main(string[] args)
         {
-            // Add target folder where resulted files will be added (full path)
+            // Add target folder from where the files will be split (full path)
             const string sourcePath = @"E:\Work\Xtel\Xtel\Core\Product\Xtel.SM1.SalesPromotion\"; 
             ProcessFilesInDirectory(sourcePath);
         }
