@@ -56,6 +56,12 @@ namespace ClassSplitter
             
             var classes = root.DescendantNodes().OfType<ClassDeclarationSyntax>().ToList();
 
+            if (classes.Count == 1)
+            {
+                Console.WriteLine("File contains a single class and it was NOT split");
+                return;
+            }
+            
             foreach (var classDeclaration in classes)
             {
                 var newTree = SyntaxFactory.SyntaxTree(

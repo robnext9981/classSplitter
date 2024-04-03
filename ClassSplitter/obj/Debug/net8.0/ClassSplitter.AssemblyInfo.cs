@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ClassSplitter")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ec6b0b6eac927353b1abd018955337f6ce59b040")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+632a96345f2c067fabb5eee27d6b05365afe0b9c")]
 [assembly: System.Reflection.AssemblyProductAttribute("ClassSplitter")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ClassSplitter")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
