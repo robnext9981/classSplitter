@@ -73,7 +73,7 @@ namespace ClassSplitter
                 File.WriteAllText($"{targetDirectory}\\{classDeclaration.Identifier}TODO.cs", newTree.ToString());
             }
 
-            Console.WriteLine($"Successfully split {classes.Count} classes into separate files.");
+            Console.WriteLine($"Successfully split {nameOfFileToBeSplit} into {classes.Count} classes into separate files.");
         }
     }
 }
