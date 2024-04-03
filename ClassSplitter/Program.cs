@@ -4,14 +4,43 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ClassSplitter
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            // Add file to be split (full path)
-            const string sourcePath = @"E:\Work\Xtel\Xtel\Core\Product\Xtel.SM1.SalesPlan\SalesPlanEngineExtensionServer.cs";
             // Add target folder where resulted files will be added (full path)
-            const string targetPath = @"E:\Work\Xtel\Xtel\Core\Product\Xtel.SM1.SalesPromotion\"; 
+            const string sourcePath = @"E:\Work\Xtel\Xtel\Core\Product\Xtel.SM1.SalesPromotion\"; 
+            ProcessFilesInDirectory(sourcePath);
+        }
+
+        private static void ProcessFilesInDirectory(string directoryPath)
+        {
+            // Get all file paths from the directory
+            var fileEntries = Directory.GetFiles(directoryPath);
+
+            foreach (var fileName in fileEntries)
+            {
+                // Process .cs files
+                if (Path.GetExtension(fileName) != ".cs") continue;
+                // Call your SplitFileIntoClasses method here
+                Console.WriteLine(fileName);
+                SplitFileIntoClasses(fileName);
+            }
+
+            // Get all subdirectory paths from the directory
+            var subDirectoryEntries = Directory.GetDirectories(directoryPath);
+
+            foreach (var subDirectoryPath in subDirectoryEntries)
+            {
+                // Recurse into subdirectories
+                ProcessFilesInDirectory(subDirectoryPath);
+            }
+        }
+
+        private static void SplitFileIntoClasses(string sourcePath)
+        {
+            var nameOfFileToBeSplit = sourcePath.Split(@"\").Last().Replace(".cs", string.Empty);
+            var targetPath = sourcePath.Replace(sourcePath.Split(@"\").Last(), "");
             
             var code = File.ReadAllText(sourcePath);
 
@@ -35,7 +64,13 @@ namespace ClassSplitter
                             namespaceDeclaration.WithMembers(
                                 new SyntaxList<MemberDeclarationSyntax>(classDeclaration))));
 
-                File.WriteAllText($"{targetPath}{classDeclaration.Identifier}.cs", newTree.ToString());
+                var targetDirectory = Path.Combine(targetPath, $"Split{nameOfFileToBeSplit}");
+                if (!Directory.Exists(targetDirectory))
+                {
+                    Directory.CreateDirectory(targetDirectory);
+                }
+
+                File.WriteAllText($"{targetDirectory}\\{classDeclaration.Identifier}TODO.cs", newTree.ToString());
             }
 
             Console.WriteLine($"Successfully split {classes.Count} classes into separate files.");
