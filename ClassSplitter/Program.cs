@@ -10,13 +10,14 @@ namespace ClassSplitter
         {
             // Add target folder from where the files will be split (full path)
             var sourcePath = args[0]; 
-            ProcessFilesInDirectory(sourcePath);
+            var destinationDirectoryPath = args[1]; 
+            ProcessFilesInDirectory(sourcePath, destinationDirectoryPath);
         }
 
-        private static void ProcessFilesInDirectory(string directoryPath)
+        private static void ProcessFilesInDirectory(string sourceDirectoryPath, string destinationDirectoryPath)
         {
             // Get all file paths from the directory
-            var fileEntries = Directory.GetFiles(directoryPath);
+            var fileEntries = Directory.GetFiles(sourceDirectoryPath);
 
             foreach (var fileName in fileEntries)
             {
@@ -24,23 +25,22 @@ namespace ClassSplitter
                 if (Path.GetExtension(fileName) != ".cs") continue;
                 // Call your SplitFileIntoClasses method here
                 Console.WriteLine(fileName);
-                SplitFileIntoClasses(fileName);
+                SplitFileIntoClasses(fileName, destinationDirectoryPath);
             }
 
             // Get all subdirectory paths from the directory
-            var subDirectoryEntries = Directory.GetDirectories(directoryPath);
+            var subDirectoryEntries = Directory.GetDirectories(sourceDirectoryPath);
 
             foreach (var subDirectoryPath in subDirectoryEntries)
             {
                 // Recurse into subdirectories
-                ProcessFilesInDirectory(subDirectoryPath);
+                ProcessFilesInDirectory(subDirectoryPath, destinationDirectoryPath);
             }
         }
 
-        private static void SplitFileIntoClasses(string sourcePath)
+        private static void SplitFileIntoClasses(string sourcePath, string destinationDirectoryPath)
         {
             var nameOfFileToBeSplit = sourcePath.Split(@"\").Last().Replace(".cs", string.Empty);
-            var targetPath = sourcePath.Replace(sourcePath.Split(@"\").Last(), "");
 
             var code = File.ReadAllText(sourcePath);
 
@@ -67,11 +67,11 @@ namespace ClassSplitter
                 return;
             }
 
-            SplitForType(nameOfFileToBeSplit, targetPath, namespaceDeclaration, types);
+            SplitForType(nameOfFileToBeSplit, destinationDirectoryPath, namespaceDeclaration, types);
 
             Console.WriteLine($"Successfully split {nameOfFileToBeSplit} into {types.Count} classes into separate files.");
         }
-        private static void SplitForType(string nameOfFileToBeSplit, string targetPath, NamespaceDeclarationSyntax namespaceDeclaration, IList<BaseTypeDeclarationSyntax> types)
+        private static void SplitForType(string nameOfFileToBeSplit, string destinationDirectoryPath, NamespaceDeclarationSyntax namespaceDeclaration, IList<BaseTypeDeclarationSyntax> types)
         {
             foreach (var type in types)
             {
@@ -81,13 +81,13 @@ namespace ClassSplitter
                             namespaceDeclaration.WithMembers(
                                 new SyntaxList<MemberDeclarationSyntax>(type))));
 
-                var targetDirectory = Path.Combine(targetPath, $"Split{nameOfFileToBeSplit}");
+                var targetDirectory = Path.Combine(destinationDirectoryPath, $"Split{nameOfFileToBeSplit}");
                 if (!Directory.Exists(targetDirectory))
                 {
                     Directory.CreateDirectory(targetDirectory);
                 }
 
-                File.WriteAllText($"{targetDirectory}\\{type.Identifier}_{type.GetType()}_Splitted.cs", newTree.ToString());
+                File.WriteAllText($"{targetDirectory}\\{type.Identifier}_Splitted.cs", newTree.ToString());
             }
         }
     }
