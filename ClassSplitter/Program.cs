@@ -4,12 +4,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ClassSplitter
 {
-    internal static class Program
+    public static class Program
     {
-        private static void Main(string[] args)
+        public static void Main(string[] args)
         {
             // Add target folder from where the files will be split (full path)
-            const string sourcePath = @"E:\Work\Xtel\Xtel\Core\Product\Xtel.SM1.SalesPromotion\"; 
+            var sourcePath = args[0]; 
             ProcessFilesInDirectory(sourcePath);
         }
 
@@ -41,7 +41,7 @@ namespace ClassSplitter
         {
             var nameOfFileToBeSplit = sourcePath.Split(@"\").Last().Replace(".cs", string.Empty);
             var targetPath = sourcePath.Replace(sourcePath.Split(@"\").Last(), "");
-            
+
             var code = File.ReadAllText(sourcePath);
 
             var tree = CSharpSyntaxTree.ParseText(code);
@@ -53,22 +53,28 @@ namespace ClassSplitter
                 Console.WriteLine("No namespace found in the given file.");
                 return;
             }
-            
-            var classes = root.DescendantNodes().OfType<ClassDeclarationSyntax>().ToList();
 
-            if (classes.Count == 1)
+            List<TypeDeclarationSyntax> types = root.DescendantNodes().OfType<TypeDeclarationSyntax>().ToList();
+
+            if (types.Count == 1)
             {
                 Console.WriteLine("File contains a single class and it was NOT split");
                 return;
             }
-            
-            foreach (var classDeclaration in classes)
+
+            SplitForType(nameOfFileToBeSplit, targetPath, namespaceDeclaration, types);
+
+            Console.WriteLine($"Successfully split {nameOfFileToBeSplit} into {types.Count} classes into separate files.");
+        }
+        private static void SplitForType(string nameOfFileToBeSplit, string targetPath, NamespaceDeclarationSyntax namespaceDeclaration, IList<TypeDeclarationSyntax> types)
+        {
+            foreach (var type in types)
             {
                 var newTree = SyntaxFactory.SyntaxTree(
                     SyntaxFactory.CompilationUnit()
                         .AddMembers(
                             namespaceDeclaration.WithMembers(
-                                new SyntaxList<MemberDeclarationSyntax>(classDeclaration))));
+                                new SyntaxList<MemberDeclarationSyntax>(type))));
 
                 var targetDirectory = Path.Combine(targetPath, $"Split{nameOfFileToBeSplit}");
                 if (!Directory.Exists(targetDirectory))
@@ -76,10 +82,8 @@ namespace ClassSplitter
                     Directory.CreateDirectory(targetDirectory);
                 }
 
-                File.WriteAllText($"{targetDirectory}\\{classDeclaration.Identifier}TODO.cs", newTree.ToString());
+                File.WriteAllText($"{targetDirectory}\\{type.Identifier}_{type.GetType()}_Splitted.cs", newTree.ToString());
             }
-
-            Console.WriteLine($"Successfully split {nameOfFileToBeSplit} into {classes.Count} classes into separate files.");
         }
     }
 }
