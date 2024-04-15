@@ -1,11 +1,11 @@
 namespace ClassSplitter.Tests
 {
-    public interface IFilettino
+    public interface ISmallFile
     {
         string SayHelloToAnother(string friend);
     }
 
-    public class Filettino : IFilettino
+    public class SmallFile : ISmallFile
     {
         public string SayHelloToAnother(string friend)
         {
