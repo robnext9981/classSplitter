@@ -45,12 +45,17 @@ namespace ClassSplitter
             var code = File.ReadAllText(sourcePath);
 
             var tree = CSharpSyntaxTree.ParseText(code);
-            var root = tree.GetRoot();
-
-            var namespaceDeclaration = (NamespaceDeclarationSyntax)root.ChildNodes().FirstOrDefault(n => n is NamespaceDeclarationSyntax);
-            if (namespaceDeclaration == null)
+            var root =  tree.GetCompilationUnitRoot();
+            if (root == null || root.Members.Count == 0)
             {
-                Console.WriteLine("No namespace found in the given file.");
+                Console.WriteLine($"No root member found on {nameOfFileToBeSplit} file.");
+                return;
+            }
+
+            var namespaceDeclaration = (NamespaceDeclarationSyntax)root.Members[0];
+            if(namespaceDeclaration == null)
+            {
+                Console.WriteLine($"No namespace as first elemnt found on {nameOfFileToBeSplit} file.");
                 return;
             }
 
@@ -58,7 +63,7 @@ namespace ClassSplitter
 
             if (types.Count == 1)
             {
-                Console.WriteLine("File contains a single class and it was NOT split");
+                Console.WriteLine($"File {nameOfFileToBeSplit} contains a single class and it was NOT split");
                 return;
             }
 
