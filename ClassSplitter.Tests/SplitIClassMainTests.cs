@@ -20,6 +20,9 @@ public class SplitMainTests
         //Arrange
         var expectedSplittedFileCount = 6;
         Assert.True(File.Exists(sourcefilePath));
-        Assert.Equal(expectedSplittedFileCount, Directory.GetFiles(baseExampleCsharpFolderPath, "*_Splitted.cs", SearchOption.AllDirectories).Length);
+        Assert.Equal(expectedSplittedFileCount, Directory.GetDirectories(baseExampleCsharpFolderPath,"Split*").Sum(dir => Directory.GetFiles(dir,"*_Splitted.cs").Length));
+
+        //Clean-up
+        Directory.Delete(baseExampleCsharpFolderPath, true);
     }
 }
