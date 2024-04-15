@@ -27,9 +27,9 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <None Include=".\SmallFile.cs" CopyToOutputDirectory="PreserveNewest" />
-    <None Include=".\SmallFileWithStruct.cs" CopyToOutputDirectory="PreserveNewest" />
-    <None Include=".\SmallFileWithEnum.cs" CopyToOutputDirectory="PreserveNewest" />
+    <None Include=".\SampleCSharpFiles\SmallFile.cs" CopyToOutputDirectory="PreserveNewest" />
+    <None Include=".\SampleCSharpFiles\SmallFileWithStruct.cs" CopyToOutputDirectory="PreserveNewest" />
+    <None Include=".\SampleCSharpFiles\SmallFileWithEnum.cs" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-
+  
 </Project>

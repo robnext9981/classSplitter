@@ -59,11 +59,11 @@ namespace ClassSplitter
                 return;
             }
 
-            List<TypeDeclarationSyntax> types = root.DescendantNodes().OfType<TypeDeclarationSyntax>().ToList();
+            List<BaseTypeDeclarationSyntax> types = root.DescendantNodes().OfType<BaseTypeDeclarationSyntax>().ToList();
 
             if (types.Count == 1)
             {
-                Console.WriteLine($"File {nameOfFileToBeSplit} contains a single class and it was NOT split");
+                Console.WriteLine($"File {nameOfFileToBeSplit} contains a single type and it was NOT split");
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace ClassSplitter
 
             Console.WriteLine($"Successfully split {nameOfFileToBeSplit} into {types.Count} classes into separate files.");
         }
-        private static void SplitForType(string nameOfFileToBeSplit, string targetPath, NamespaceDeclarationSyntax namespaceDeclaration, IList<TypeDeclarationSyntax> types)
+        private static void SplitForType(string nameOfFileToBeSplit, string targetPath, NamespaceDeclarationSyntax namespaceDeclaration, IList<BaseTypeDeclarationSyntax> types)
         {
             foreach (var type in types)
             {
