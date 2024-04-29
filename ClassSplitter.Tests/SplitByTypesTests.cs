@@ -82,7 +82,7 @@ public class SplitByTypesTests : IDisposable
         var sourcefilePath = Path.Combine(baseExampleCsharpFolderPath, "SmallFile.cs");
 
         //Act 
-        Program.Main([baseExampleCsharpFolderPath, baseExampleCsharpFolderPath, ".\\SmallFileWithEnum.cs"]);
+        Program.Main([baseExampleCsharpFolderPath, baseExampleCsharpFolderPath, Path.Combine(baseExampleCsharpFolderPath,"SmallFileWithEnum.cs")]);
 
         //Arrange
         var expectedSplittedFileCount = 4;

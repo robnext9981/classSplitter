@@ -11,10 +11,14 @@ namespace ClassSplitter
             // Add target folder from where the files will be split (full path)
             var sourcePath = args[0]; 
             var destinationDirectoryPath = args[1];
-            ProcessFilesInDirectory(sourcePath, destinationDirectoryPath);
+             var excludedFiles = new List<string>();
+            if(args.Length > 2){
+                excludedFiles.AddRange(args[2..]);
+            }
+            ProcessFilesInDirectory(sourcePath, destinationDirectoryPath, [.. excludedFiles]);
         }
 
-        private static void ProcessFilesInDirectory(string sourceDirectoryPath, string destinationDirectoryPath)
+        private static void ProcessFilesInDirectory(string sourceDirectoryPath, string destinationDirectoryPath, string[] excludedFiles)
         {
             // Get all file paths from the directory
             var fileEntries = Directory.GetFiles(sourceDirectoryPath);
@@ -22,7 +26,7 @@ namespace ClassSplitter
             foreach (var fileName in fileEntries)
             {
                 // Process .cs files
-                if (Path.GetExtension(fileName) != ".cs") continue;
+                if (Path.GetExtension(fileName) != ".cs" || excludedFiles.Contains(fileName)) continue;
                 // Call your SplitFileIntoClasses method here
                 Console.WriteLine(fileName);
                 SplitFileIntoClasses(fileName, destinationDirectoryPath);
@@ -34,7 +38,7 @@ namespace ClassSplitter
             foreach (var subDirectoryPath in subDirectoryEntries)
             {
                 // Recurse into subdirectories
-                ProcessFilesInDirectory(subDirectoryPath, destinationDirectoryPath);
+                ProcessFilesInDirectory(subDirectoryPath, destinationDirectoryPath, excludedFiles);
             }
         }
 
