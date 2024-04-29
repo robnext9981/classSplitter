@@ -10,7 +10,7 @@ namespace ClassSplitter
         {
             // Add target folder from where the files will be split (full path)
             var sourcePath = args[0]; 
-            var destinationDirectoryPath = args[1]; 
+            var destinationDirectoryPath = args[1];
             ProcessFilesInDirectory(sourcePath, destinationDirectoryPath);
         }
 
@@ -52,10 +52,11 @@ namespace ClassSplitter
                 return;
             }
 
+            
             var namespaceDeclaration = (NamespaceDeclarationSyntax)root.Members[0];
             if(namespaceDeclaration == null)
             {
-                Console.WriteLine($"No namespace as first elemnt found on {nameOfFileToBeSplit} file.");
+                Console.WriteLine($"No namespace as first element found on {nameOfFileToBeSplit} file.");
                 return;
             }
 
@@ -67,16 +68,18 @@ namespace ClassSplitter
                 return;
             }
 
-            SplitForType(nameOfFileToBeSplit, destinationDirectoryPath, namespaceDeclaration, types);
+            SplitForType(nameOfFileToBeSplit, destinationDirectoryPath, namespaceDeclaration, root.Usings, types);
 
             Console.WriteLine($"Successfully split {nameOfFileToBeSplit} into {types.Count} classes into separate files.");
         }
-        private static void SplitForType(string nameOfFileToBeSplit, string destinationDirectoryPath, NamespaceDeclarationSyntax namespaceDeclaration, IList<BaseTypeDeclarationSyntax> types)
+
+        private static void SplitForType(string nameOfFileToBeSplit, string destinationDirectoryPath, NamespaceDeclarationSyntax namespaceDeclaration, SyntaxList<UsingDirectiveSyntax> usings, IList<BaseTypeDeclarationSyntax> types)
         {
             foreach (var type in types)
             {
                 var newTree = SyntaxFactory.SyntaxTree(
                     SyntaxFactory.CompilationUnit()
+                        .AddUsings([.. usings])
                         .AddMembers(
                             namespaceDeclaration.WithMembers(
                                 new SyntaxList<MemberDeclarationSyntax>(type))));
@@ -87,8 +90,11 @@ namespace ClassSplitter
                     Directory.CreateDirectory(targetDirectory);
                 }
 
-                File.WriteAllText($"{targetDirectory}\\{type.Identifier}_Splitted.cs", newTree.ToString());
+                File.WriteAllText($"{targetDirectory}\\{type.Identifier}.cs", newTree.ToString());
             }
         }
+    
+
+    
     }
 }
